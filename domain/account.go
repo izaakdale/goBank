@@ -22,6 +22,7 @@ type Transaction struct {
 	TransactionDate string  `db:"transaction_date"`
 }
 
+//go:generate mockgen -destination=../mocks/domain/mockAccountRepo.go -package=domain github.com/izaakdale/goBank/domain AccountRepo
 type AccountRepo interface {
 	FindById(string) (*Account, *errs.AppError)
 	SaveAccount(Account) (*Account, *errs.AppError)
