@@ -31,13 +31,13 @@ func TestReturnValidationErrorForInvalidRequest(t *testing.T) {
 }
 
 var req dto.NewAccountRequest
-var mockRepo *domain.MockAccountRepo
+var mockAccountRepo *domain.MockAccountRepo
 var service AccountService
 
-func setup(t *testing.T) func() {
+func setupAccountTest(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
-	mockRepo = domain.NewMockAccountRepo(ctrl)
-	service = NewAccountService(mockRepo)
+	mockAccountRepo = domain.NewMockAccountRepo(ctrl)
+	service = NewAccountService(mockAccountRepo)
 
 	return func() {
 		service = nil
@@ -47,7 +47,7 @@ func setup(t *testing.T) func() {
 
 func TestReturnErrorFromServerForAccountCreationFailure(t *testing.T) {
 	//arrange
-	teardown := setup(t)
+	teardown := setupAccountTest(t)
 	defer teardown()
 
 	req := dto.NewAccountRequest{
@@ -65,7 +65,7 @@ func TestReturnErrorFromServerForAccountCreationFailure(t *testing.T) {
 	}
 
 	//act
-	mockRepo.EXPECT().SaveAccount(account).Return(nil, errs.NewUnexpectedError("Unexpected DB Error"))
+	mockAccountRepo.EXPECT().SaveAccount(account).Return(nil, errs.NewUnexpectedError("Unexpected DB Error"))
 	_, err := service.NewAccount(req)
 
 	//assert
@@ -75,7 +75,7 @@ func TestReturnErrorFromServerForAccountCreationFailure(t *testing.T) {
 }
 
 func TestReturnNewAccountForSuccessfulAccountCreation(t *testing.T) {
-	teardown := setup(t)
+	teardown := setupAccountTest(t)
 	defer teardown()
 
 	req := dto.NewAccountRequest{
@@ -93,7 +93,7 @@ func TestReturnNewAccountForSuccessfulAccountCreation(t *testing.T) {
 	}
 	accountWithId := account
 	accountWithId.AccountId = "201"
-	mockRepo.EXPECT().SaveAccount(account).Return(&accountWithId, nil)
+	mockAccountRepo.EXPECT().SaveAccount(account).Return(&accountWithId, nil)
 
 	//act
 	newAccount, err := service.NewAccount(req)
