@@ -26,22 +26,14 @@ func (as DefaultAccountService) NewAccount(req dto.NewAccountRequest) (*dto.NewA
 	if err != nil {
 		return nil, err
 	}
-	account := domain.Account{
-		AccountId:   "",
-		CustomerId:  req.CustomerId,
-		OpeningDate: time.Now().Format("2006-01-02 15:04:05"),
-		AccountType: req.AccountType,
-		Balance:     req.Balance,
-		Status:      "1",
-	}
+	account := domain.NewAccount(req.CustomerId, req.AccountType, req.Balance)
+
 	newAccount, err := as.repo.SaveAccount(account)
 	if err != nil {
 		return nil, err
 	}
 
-	newAccountResponse := newAccount.ToNewAccountResponseDto()
-
-	return &newAccountResponse, nil
+	return newAccount.ToNewAccountResponseDto(), nil
 }
 
 func (as DefaultAccountService) NewTransaction(req dto.NewTransactionRequest) (*dto.NewTransactionResponse, *errs.AppError) {

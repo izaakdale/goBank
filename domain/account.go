@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/izaakdale/goBank/dto"
 	"github.com/izaakdale/goBank/errs"
 )
@@ -30,8 +32,8 @@ type AccountRepo interface {
 	SaveTransaction(Transaction) (*Transaction, *errs.AppError)
 }
 
-func (account Account) ToNewAccountResponseDto() dto.NewAccountResponse {
-	return dto.NewAccountResponse{
+func (account Account) ToNewAccountResponseDto() *dto.NewAccountResponse {
+	return &dto.NewAccountResponse{
 		AccountId: account.AccountId,
 	}
 }
@@ -52,4 +54,15 @@ func (account Account) CanWithdraw(amount float64) bool {
 
 func (transaction Transaction) IsWithdrawal() bool {
 	return transaction.TransactionType == "withdrawal"
+}
+
+func NewAccount(customerId, accountType string, balance float64) Account {
+	return Account{
+		AccountId:   "", // empty since this is provided by DB after request.
+		CustomerId:  customerId,
+		OpeningDate: time.Now().Format("2006-01-02 15:04:05"),
+		AccountType: accountType,
+		Balance:     balance,
+		Status:      "1",
+	}
 }
